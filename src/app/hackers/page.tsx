@@ -114,7 +114,7 @@ const Hackers = () => {
         <p className={`text-sm text-center `}>{profile?.bio}</p>
         
         <button  className={`py-2 px-4 rounded-xl bg-stone-700 my-4`} onClick={()=>getMyReputation()}> Get Reputation</button>
-        <button  className={`py-2 px-4 rounded-xl bg-stone-700 my-4`} onClick={()=>getMyProfile("0x15acfD6c3C7Ca01Fc3a11C6cB3155377984305f2")}> Get gsjh</button>
+      
         </div>
       </div>
       <div className='flex flex-col justify-center items-center min-h-screen w-full overflow-scroll  '>
