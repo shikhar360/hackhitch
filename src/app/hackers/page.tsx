@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { client, exploreProfiles , getMyProfileEth, /* getMyProfileEth2*/ } from '../api'
+import { client, exploreProfiles , getMyProfileEth,  getMyProfileEth2 } from '../api'
 import Link from 'next/link'
 import { LensClient, development } from "@lens-protocol/client";
 import { useAccount ,useWalletClient, usePublicClient } from 'wagmi';
@@ -53,14 +53,20 @@ const Hackers = () => {
   //     const defaultProfile = allOwnedProfiles.items[0];
 
   //  console.log(getMyProfileEth(addr));
-  //  const q = getMyProfileEth2(addr)
+   const q = getMyProfileEth2(addr)
  //not working
-  // let response = await client.query({ query: q })
+  let response = await client.query({
+      query: q,
+      variables: {
+        ethereumAddress: addr,
+      },
+    });
   //
   //this mf is working but dont want it to work
-  let response = await client.query({ query: getMyProfileEth })
 
-  let data = response.data.defaultProfile
+  // let response = await client.query({ query: getMyProfileEth })
+
+  let data = response.data.defaultProfile;
   console.log(data)
     setProfile(data)
     console.log(data.picture.original.url)
