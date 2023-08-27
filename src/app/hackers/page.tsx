@@ -1,13 +1,14 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { client, exploreProfiles , getMyProfileEth } from '../api'
+import { client, exploreProfiles , getMyProfileEth, /* getMyProfileEth2*/ } from '../api'
 import Link from 'next/link'
 import { LensClient, development } from "@lens-protocol/client";
 import { useAccount ,useWalletClient, usePublicClient } from 'wagmi';
 import { parseEther, encodeAbiParameters, parseAbiParameters, formatEther } from "viem";
 
 import Image from 'next/image'
+import { ABI, contractAddress } from '../../../constant/page';
 
 
 const Hackers = () => {
@@ -19,7 +20,7 @@ const Hackers = () => {
   const [profile, setProfile] = useState<any>([])
   useEffect(() => {
     fetchProfiles()
-    getMyProfile()
+    getMyProfile("0x15acfD6c3C7Ca01Fc3a11C6cB3155377984305f2")
   }, [])
 
   // const lensClient = new LensClient({
@@ -41,7 +42,7 @@ const Hackers = () => {
   }
 
 
-  async function getMyProfile ( ){
+  async function getMyProfile (addr : string ){
    
   //  const allOwnedProfiles = await lensClient.profile.fetchAll({
   //   ownedBy: [address],
@@ -51,8 +52,14 @@ const Hackers = () => {
   //     // defaultProfile is a ProfileFragment
   //     const defaultProfile = allOwnedProfiles.items[0];
 
-  //  console.log(defaultProfile);
+  //  console.log(getMyProfileEth(addr));
+  //  const q = getMyProfileEth2(addr)
+ //not working
+  // let response = await client.query({ query: q })
+  //
+  //this mf is working but dont want it to work
   let response = await client.query({ query: getMyProfileEth })
+
   let data = response.data.defaultProfile
   console.log(data)
     setProfile(data)
@@ -64,10 +71,28 @@ const Hackers = () => {
 
       //have to code something
       if (!isConnected)return;
-      
+      const { request } = await publicClient.simulateContract(
+        {
+          address: contractAddress,
+          abi: ABI,
+          functionName: "request",
+          account: address,
+          args: [profile?.id],
+        }
+      );
 
+      const tx = await walletClient?.writeContract(request);
+      console.log("Transaction Hash --->>>",tx);
+     
+      if(!tx)return
+      const transaction = await publicClient.waitForTransactionReceipt({
+        hash: tx,
+      });
+      console.log("Transaction --->>>",transaction);
+      
     }catch(err){console.log(err)}
   }
+  // console.log(ABI);
 
 
   return (
@@ -83,6 +108,7 @@ const Hackers = () => {
         <p className={`text-sm text-center `}>{profile?.bio}</p>
         
         <button  className={`py-2 px-4 rounded-xl bg-stone-700 my-4`} onClick={()=>getMyReputation()}> Get Reputation</button>
+        <button  className={`py-2 px-4 rounded-xl bg-stone-700 my-4`} onClick={()=>getMyProfile("0x15acfD6c3C7Ca01Fc3a11C6cB3155377984305f2")}> Get gsjh</button>
         </div>
       </div>
       <div className='flex flex-col justify-center items-center min-h-screen w-full overflow-scroll  '>
