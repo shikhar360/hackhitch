@@ -98,7 +98,7 @@ export default function Homepage() {
           <div className="flex flex-col  justify-start w-full  hover:shadow-xl shadow-black transition-all duration-150 rounded-xl py-2 px-4 text-center items-center ease-linear p-2   hover:bg-white/20 pb-6">
             <p className="text-lg mb-3"> Backed by Lens</p>
             <p className="text-xs ">
-              HackHitch is supported and built using the lens's api which makes
+              HackHitch is supported and built using the lens&apos;s api which makes
               it trustful in getting the perfect partner and also a wide variety
               of people to help you when you got stuck in anything.
             </p>

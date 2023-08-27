@@ -21,7 +21,7 @@ import Head from 'next/head';
 
 const { chains, publicClient } = configureChains(
   [mainnet, polygon, polygonMumbai],
-  [alchemyProvider({ apiKey: 'lNHE8SSqfOyyifdNCKx_h1RIRXDrHew3' }), publicProvider()]
+  [alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_APIKEY as string  }), publicProvider()]
 );
 
 const { connectors } = getDefaultWallets({
@@ -45,13 +45,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       
-      <body className={""}>
-      <Head>
-        <title>HackHitch</title>
-        <meta name="description" content="Made with 💜 by Shikhar , Kamal" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/img/a.png" />
-      </Head> 
+      <body className={""}> 
       <WagmiConfig config={wagmiConfig}>
       <RainbowKitProvider chains={chains}>
         <Navbar/>
