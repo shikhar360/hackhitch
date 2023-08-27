@@ -4,10 +4,17 @@ import { useEffect, useState } from 'react'
 import { client, exploreProfiles , getMyProfileEth } from '../api'
 import Link from 'next/link'
 import { LensClient, development } from "@lens-protocol/client";
-import { useAccount } from 'wagmi';
+import { useAccount ,useWalletClient, usePublicClient } from 'wagmi';
+import { parseEther, encodeAbiParameters, parseAbiParameters, formatEther } from "viem";
+
+import Image from 'next/image'
+
 
 const Hackers = () => {
   const { address , isConnected} = useAccount();
+  const publicClient = usePublicClient();
+  const { data: walletClient } = useWalletClient();
+
   const [profiles, setProfiles] = useState<any>([])
   const [profile, setProfile] = useState<any>([])
   useEffect(() => {
@@ -15,9 +22,9 @@ const Hackers = () => {
     getMyProfile()
   }, [])
 
-  const lensClient = new LensClient({
-    environment: development
-  });
+  // const lensClient = new LensClient({
+  //   environment: development
+  // });
 
   async function fetchProfiles() {
     try {
@@ -48,23 +55,42 @@ const Hackers = () => {
   let response = await client.query({ query: getMyProfileEth })
   let data = response.data.defaultProfile
   console.log(data)
-  setProfile(data)
-  // console.log(profile.name)
-}
+    setProfile(data)
+    console.log(data.picture.original.url)
+  }
+
+  async function getMyReputation (){
+    try{
+
+      //have to code something
+      if (!isConnected)return;
+      
+
+    }catch(err){console.log(err)}
+  }
+
+
   return (
     <div className='pt-20 text-white grid grid-cols-2 min-h-screen '>
-      <div>
-        <h1> {profile?.name}</h1>
+      <div className={`w-full flex items-start justify-center`}>
+        <div className={`w-[80%] bg-stone-800 py-2 px-4 rounded-xl flex flex-col items-center justify-center`}>
+
+        <img src={profile?.picture?.original?.url as string} alt="img" className={`rounded-xl `} />
+        <h1 className={`font-semibold py-2`} > {profile?.name}</h1>
+
+        <h1 className={` text-lime-400 pb-1`} > {profile?.handle}</h1>
+        <h1 className={`text-xs text-grey-500 pb-2`}> {profile?.ownedBy}</h1>
+        <p className={`text-sm text-center `}>{profile?.bio}</p>
         
-        <button onClick={()=>getMyProfile()}>MyProfile</button>
+        <button  className={`py-2 px-4 rounded-xl bg-stone-700 my-4`} onClick={()=>getMyReputation()}> Get Reputation</button>
+        </div>
       </div>
       <div className='flex flex-col justify-center items-center min-h-screen w-full overflow-scroll  '>
-        {/* <button onClick={()=>getMyProfile(address as string)}>MyProfile</button> */}
-        <h1 className='text-5xl mb-6 font-bold'>Hello Lens 🌿</h1>
+        
         {
           profiles.map(profile => (
-            <div key={profile.id} className='w-2/3 shadow-md p-6 rounded-lg mb-8 flex flex-col items-center'>
-              <img className='w-48' src={profile.picture.original.url} />
+            <div key={profile.id} className='w-2/3 shadow-md p-6 rounded-lg mb-8 flex flex-col items-center  bg-stone-800 py-2 px-4  justify-center'>
+              <img className='w-48 rounded-xl' src={profile.picture.original.url} />
               <p className='text-xl text-center mt-6'>{profile.name}</p>
               <p className='text-base text-gray-400  text-center mt-2'>{profile.bio}</p>
              
