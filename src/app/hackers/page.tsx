@@ -127,6 +127,8 @@ const Hackers = () => {
               <p className='text-base text-gray-400  text-center mt-2'>{profile.bio}</p>
              
               <p className='text-pink-600 text-sm font-medium text-center'>{profile.stats.totalFollowers} followers</p>
+
+              <button  className={`py-2 px-4 rounded-xl bg-stone-700 my-4`} onClick={()=>getMyReputation()}> Get Hackr Reputation</button>
             </div>
           ))
         }
