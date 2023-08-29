@@ -1,7 +1,8 @@
+// @ts-nocheck
 'use client'
 
 import { useEffect, useState } from 'react'
-import { client, exploreProfiles , getMyProfileEth,  getMyProfileEth2 } from '../api'
+import { client, exploreProfiles , getMyProfileEth,  getMyProfileEth2 , getDefaultProfile } from '../api'
 import Link from 'next/link'
 import { LensClient, development } from "@lens-protocol/client";
 import { useAccount ,useWalletClient, usePublicClient } from 'wagmi';
@@ -10,7 +11,7 @@ import { parseEther, encodeAbiParameters, parseAbiParameters, formatEther } from
 import Image from 'next/image'
 import { ABI, contractAddress } from '../../../constant/page';
 
-
+import Profile from '@/components/profile/page';
 const Hackers = () => {
   const { address , isConnected} = useAccount();
   const publicClient = usePublicClient();
@@ -43,7 +44,35 @@ const Hackers = () => {
 
 
   async function getMyProfile (addr : string ){
-   
+    console.log(addr,"address")
+
+    try {
+      const q = getMyProfileEth2(addr);
+      const response = await client.query({
+        query: q,
+        variables: {
+          ethereumAddress: addr,
+        },
+      });
+      
+      console.log(response,"res")
+      // Process the response...
+    } catch (error) {
+      console.error("Error while querying:", error);
+    }
+
+    // const q = getMyProfileEth2(addr);
+    // const response = await client.query({
+    //   query: q,
+    //   variables: {
+    //     ethereumAddress: addr,
+    //   },
+    // });
+    // const data = response.data.defaultProfile;
+    // setProfile(data);
+    // console.log(data.picture.original.url);
+
+
   //  const allOwnedProfiles = await lensClient.profile.fetchAll({
   //   ownedBy: [address],
   //   limit: 1,
@@ -53,23 +82,23 @@ const Hackers = () => {
   //     const defaultProfile = allOwnedProfiles.items[0];
 
   //  console.log(getMyProfileEth(addr));
-   const q = getMyProfileEth2(addr)
+  //  const q = getMyProfileEth2(addr)
  //not working
-  let response = await client.query({
-      query: q,
-      variables: {
-        ethereumAddress: addr,
-      },
-    });
+  // let response = await client.query({
+  //     query: q,
+  //     variables: {
+  //       ethereumAddress: addr,
+  //     },
+  //   });
   //
   //this mf is working but dont want it to work
 
   // let response = await client.query({ query: getMyProfileEth })
 
-  let data = response.data.defaultProfile;
-  console.log(data)
-    setProfile(data)
-    console.log(data.picture.original.url)
+  // let data = response.data.defaultProfile;
+  // console.log(data)
+    // setProfile(data)
+    // console.log(data.picture.original.url)
   }
 
   async function getMyReputation (){
@@ -117,22 +146,35 @@ const Hackers = () => {
       
         </div>
       </div>
-      <div className='flex flex-col justify-center items-center min-h-screen w-full overflow-scroll  '>
-        
-        {
-          profiles.map(profile => (
-            <div key={profile.id} className='w-2/3 shadow-md p-6 rounded-lg mb-8 flex flex-col items-center  bg-stone-800 py-2 px-4  justify-center'>
-              <img className='w-48 rounded-xl' src={profile.picture.original.url} />
-              <p className='text-xl text-center mt-6'>{profile.name}</p>
-              <p className='text-base text-gray-400  text-center mt-2'>{profile.bio}</p>
-             
-              <p className='text-pink-600 text-sm font-medium text-center'>{profile.stats.totalFollowers} followers</p>
+      <div className='flex flex-col justify-center items-center min-h-screen w-full overflow-scroll'>
+  <p class='cursor-pointer text-violet-600 text-lg font-medium text-center mt-2 mb-2'>
+    {profile.handle}
+  </p>
 
-              <button  className={`py-2 px-4 rounded-xl bg-stone-700 my-4`} onClick={()=>getMyReputation()}> Get Hackr Reputation</button>
-            </div>
-          ))
-        }
-      </div>
+  <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4'>
+    {profiles.map(profile => (
+      <Link key={profile.id} href={`/profile/${profile.handle}`}>
+        <div className='shadow-md p-6 rounded-lg flex flex-col items-center bg-stone-800 py-2 px-4 justify-center'>
+          <img className='w-48 rounded-xl' src={profile.picture.original.url} />
+          <p className='text-xl text-center mt-6'>{profile.name}</p>
+          <p className='text-base text-gray-400 text-center mt-2'>{profile.bio}</p>
+
+          <p className='text-pink-600 text-sm font-medium text-center'>
+            {profile.stats.totalFollowers} followers
+          </p>
+
+          <button
+            className={`py-2 px-4 rounded-xl bg-stone-700 my-4`}
+            onClick={() => getMyReputation()}
+          >
+            Get Hackr Reputation
+          </button>
+        </div>
+      </Link>
+    ))}
+  </div>
+</div>
+
     </div>
   )
 }

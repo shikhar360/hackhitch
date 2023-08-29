@@ -1,5 +1,5 @@
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client'
-
+import { TypedDocumentNode } from '@apollo/client/core';
 const API_URL = 'https://api.lens.dev'
 
 /* create the API client */
@@ -32,94 +32,92 @@ query ExploreProfiles {
 }
 `
 
-export const getMyProfileEth2 = (addr : string)=>{
-
-  return  gql`
-  query DefaultProfile($ethereumAddress: String!) {
-    defaultProfile(request: { ethereumAddress: $ethereumAddress }) {
-      id
-      name
-      bio
-      isDefault
-      attributes {
-        displayType
-        traitType
-        key
-        value
+export const getDefaultProfile = gql`
+query DefaultProfile($address: EthereumAddress!) {
+  defaultProfile(request: { ethereumAddress: $address}) {
+    id
+    name
+    bio
+    isDefault
+    attributes {
+      displayType
+      traitType
+      key
+      value
+    }
+    followNftAddress
+    metadata
+    handle
+    picture {
+      ... on NftImage {
+        contractAddress
+        tokenId
+        uri
+        chainId
+        verified
       }
-      followNftAddress
-      metadata
-      handle
-      picture {
-        ... on NftImage {
-          contractAddress
-          tokenId
-          uri
-          chainId
-          verified
-        }
-        ... on MediaSet {
-          original {
-            url
-            mimeType
-          }
-        }
-      }
-      coverPicture {
-        ... on NftImage {
-          contractAddress
-          tokenId
-          uri
-          chainId
-          verified
-        }
-        ... on MediaSet {
-          original {
-            url
-            mimeType
-          }
-        }
-      }
-      ownedBy
-      dispatcher {
-        address
-        canUseRelay
-      }
-      stats {
-        totalFollowers
-        totalFollowing
-        totalPosts
-        totalComments
-        totalMirrors
-        totalPublications
-        totalCollects
-      }
-      followModule {
-        ... on FeeFollowModuleSettings {
-          type
-          contractAddress
-          amount {
-            asset {
-              name
-              symbol
-              decimals
-              address
-            }
-            value
-          }
-          recipient
-        }
-        ... on ProfileFollowModuleSettings {
-        type
-        }
-        ... on RevertFollowModuleSettings {
-        type
+      ... on MediaSet {
+        original {
+          url
+          mimeType
         }
       }
     }
+    coverPicture {
+      ... on NftImage {
+        contractAddress
+        tokenId
+        uri
+        chainId
+        verified
+      }
+      ... on MediaSet {
+        original {
+          url
+          mimeType
+        }
+      }
+    }
+    ownedBy
+    dispatcher {
+      address
+      canUseRelay
+    }
+    stats {
+      totalFollowers
+      totalFollowing
+      totalPosts
+      totalComments
+      totalMirrors
+      totalPublications
+      totalCollects
+    }
+    followModule {
+      ... on FeeFollowModuleSettings {
+        type
+        contractAddress
+        amount {
+          asset {
+            name
+            symbol
+            decimals
+            address
+          }
+          value
+        }
+        recipient
+      }
+      ... on ProfileFollowModuleSettings {
+       type
+      }
+      ... on RevertFollowModuleSettings {
+       type
+      }
+    }
   }
-  `
 }
+
+`
 
 export const getMyProfileEth = gql`
 query DefaultProfile {
@@ -205,4 +203,48 @@ query DefaultProfile {
     }
   }
 }
+`
+
+export const getProfile = gql`
+query Profile($handle: Handle!) {
+  profile(request: { handle: $handle }) {
+    id
+    name
+    bio
+    picture {
+      ... on MediaSet {
+        original {
+          url
+        }
+      }
+    }
+    handle
+  }
+}
+`
+
+export const getPublications = gql`
+  query Publications($id: ProfileId!, $limit: LimitScalar) {
+    publications(request: {
+      profileId: $id,
+      publicationTypes: [POST],
+      limit: $limit
+    }) {
+      items {
+        __typename 
+        ... on Post {
+          ...PostFields
+        }
+      }
+    }
+  }
+  fragment PostFields on Post {
+    id
+    metadata {
+      ...MetadataOutputFields
+    }
+  }
+  fragment MetadataOutputFields on MetadataOutput {
+    content
+  }
 `

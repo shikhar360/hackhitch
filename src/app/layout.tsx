@@ -26,7 +26,7 @@ const { chains, publicClient } = configureChains(
 
 const { connectors } = getDefaultWallets({
   appName: 'Hackhitch',
-  projectId: 'YOUR_PROJECT_ID',
+  projectId: '52e81fd8d71589d2c61227f9258c5671',
   chains
 });
 
